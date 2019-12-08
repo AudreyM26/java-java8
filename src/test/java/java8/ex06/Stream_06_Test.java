@@ -2,6 +2,7 @@ package java8.ex06;
 
 import org.junit.Test;
 
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
@@ -32,25 +33,35 @@ public class Stream_06_Test {
             total += value;
         }
     }
+    
+    //Accumulator a partir du corrige
+    /*
+    private class Accumulator {
+    	private AtomicLong total=new AtomicLong(0);
+
+    	private void add(long value) {
+    		total.addAndGet(value);
+    	}
+    }*/
 
     // TODO compléter la méthode pour que le calcul de la somme soit fait avec une instance d'Accumulator
     private long sumWithAccumulator(long n) {
         // TODO créer une instance de l'accumulateur (classe Accumulator)
-        Accumulator acc = null;
+        Accumulator acc = new Accumulator();
         LongStream longStream = LongStream.rangeClosed(1, n - 1);
 
         // TODO pour chaque élément de longStream, invoquer la méthode add de l'accumulateur (acc)
-
+        longStream.forEach(p->acc.add(p));
         return acc.total;
+      
     }
 
     // TODO exécuter le test pour valider l'implémentation de sumWithAccumulator
     @Test
     public void test_sumWithAccumulator() throws Exception {
-        Stream.of(1L, 1000L, 10000L).forEach(n -> {
+       Stream.of(1L, 1000L, 10000L).forEach(n -> {
             long result1 = imperativeSum(n);
             long result2 = sumWithAccumulator(n);
-
             assertThat(result1, is(result2));
         });
     }
@@ -58,9 +69,17 @@ public class Stream_06_Test {
 
     // TODO reprendre le code de sumWithAccumulator et rendre le traitement parallèle (.parallel())
     private long sumWithAccumulatorParallel(long n) {
-        return 0;
+    	// TODO créer une instance de l'accumulateur (classe Accumulator)
+        Accumulator acc = new Accumulator();
+        LongStream longStream = LongStream.rangeClosed(1, n - 1);
+
+        // TODO pour chaque élément de longStream, invoquer la méthode add de l'accumulateur (acc)
+        longStream.parallel().forEach(p->acc.add(p));
+        return acc.total;
     }
 
+    
+    
     // TODO Exécuter le test
     // Que constatez-vous ?
     @Test
@@ -73,10 +92,12 @@ public class Stream_06_Test {
             long result3 = sumWithAccumulatorParallel(n);
 
             assertThat("n=" + n, result1, is(result2));
+            
+            // vu corrige : On constate que la méthode add de la classe Accumulator n'est pas "thread safe". 
+            // Pour cela il faut faire l'addition avec l'instance de Accumulator en commentaires et qui utilise AtomicLong.
             assertThat("n=" + n, result1, is(result3));
 
             Logger.getGlobal().info("Test ok avec n=" + n);
         });
     }
-
 }

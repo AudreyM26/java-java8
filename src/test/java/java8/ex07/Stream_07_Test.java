@@ -36,20 +36,21 @@ public class Stream_07_Test {
 
     // TODO créer une fonction List<Pizza> -> List<Pizza>
     // TODO seules les pizzas ayant un prix >= 1000 sont conservées
-    Function<List<Pizza>, List<Pizza>> filterPizza = null;
+    Function<List<Pizza>, List<Pizza>> filterPizza = (List<Pizza> pizzas) -> pizzas.stream().filter(p->p.getPrice()>=1000).collect(Collectors.toList());
 
     // TODO créer une fonction List<Pizza> -> List<Pizza>
     // TODO seules les pizzas ayant un prix >= 1000 sont conservées
     // TODO .parallel()
-    Function<List<Pizza>, List<Pizza>> parallelFilterPizza = null;
+    Function<List<Pizza>, List<Pizza>> parallelFilterPizza = (List<Pizza> pizzas) -> pizzas.stream().parallel().filter(p->p.getPrice()>=1000).collect(Collectors.toList());
+;
 
     // TODO exécuter le test pour visualiser le temps d'exécution
-    @Test
+   @Test
     public void test_arraylist_vs_linkedlist() throws Exception {
         arraylist_vs_linkedlist(filterPizza);
     }
 
-    // Que constatez-vous ?
+    // Que constatez-vous pour une liste
     // De mon côté :
     // INFO: arrayList=21 ms
     // INFO: linkedList=21 ms
@@ -61,10 +62,10 @@ public class Stream_07_Test {
         arraylist_vs_linkedlist(parallelFilterPizza);
     }
 
-    // Que constatez-vous ?
+    // Que constatez-vous pour une liste parallele
     // INFO: arrayList=15 ms
     // INFO: linkedList=83 ms
-
+   
     public void arraylist_vs_linkedlist(Function<List<Pizza>, List<Pizza>> fn) throws Exception {
 
         int nbPizzas = 1000000;
